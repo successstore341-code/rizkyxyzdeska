@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabungan Rizky Herlangga & Deska Putri Hidayani</title>
+    
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;600;700;800&family=Playfair+Display:ital,wght=0,700;0,900;1,700&family=Dancing+Script:wght=700&display=swap" rel="stylesheet">
+    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-database-compat.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --neon-blue: #00f0ff;  
+            --neon-pink: #ff007f;  
+            --bg-dark: #03050d; 
+            --card-bg: rgba(7, 11, 26, 0.85); 
+            --text-main: #ffffff;
+            --font-sans: 'Plus Jakarta Sans', sans-serif;
+            --font-serif: 'Playfair Display', serif;
+            --font-cursive: 'Dancing Script', cursive;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+
+        body {
+            background: linear-gradient(135deg, #020105 0%, #010a14 35%, #14020e 70%, #020308 100%);
+            background-size: 300% 300%;
+            animation: pergeseranGradasi 10s ease infinite;
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            min-height: 100vh;
+            padding: 20px;
+            padding-bottom: 60px;
+            overflow-x: hidden;
+        }
+
+        @keyframes pergeseranGradasi {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+
+        .bg-deco { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        .particle { 
+            position: absolute; 
+            border-radius: 50%; 
+            animation: melayangKeAtas 15s infinite linear; 
+            opacity: 0.8;
+        }
+        .particle.p-blue { background: radial-gradient(circle, rgba(0, 240, 255, 0.5) 0%, rgba(0,0,0,0) 70%); box-shadow: 0 0 30px rgba(0, 240, 255, 0.4); }
+        .particle.p-pink { background: radial-gradient(circle, rgba(255, 0, 127, 0.5) 0%, rgba(0,0,0,0) 70%); box-shadow: 0 0 30px rgba(255, 0, 127, 0.4); }
+
+        @keyframes melayangKeAtas {
+            0% { transform: translateY(110vh) translateX(0) scale(0.6); opacity: 0; }
+            15% { opacity: 1; }
+            85% { opacity: 1; }
+            100% { transform: translateY(-20vh) translateX(70px) scale(1.4); opacity: 0; }
+        }
+
+        .container { max-width: 680px; margin: 0 auto; position: relative; }
+        
+
+        .header-widget {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding: 0 5px;
+        }
+        
+        #status-waktu {
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            color: #b3d7ff;
+            text-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+        }
+
+        #jam-digital {
+            font-size: 0.9rem;
+            font-weight: 900;
+            color: #ffffff;
+            background: rgba(0, 240, 255, 0.2);
+            padding: 6px 18px;
+            border-radius: 50px;
+            border: 2px solid var(--neon-blue);
+            box-shadow: 0 0 25px var(--neon-blue), inset 0 0 10px rgba(0, 240, 255, 0.4);
+            letter-spacing: 1.5px;
+        }
+
+        .top-bar { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            margin-bottom: 30px; 
+        }
+        
+        .app-title { 
+            font-size: 1.2rem; 
+            letter-spacing: 3px; 
+            font-weight: 900; 
+            color: #fff; 
+            text-transform: uppercase;
+            text-shadow: 0 0 15px var(--neon-blue), 0 0 30px var(--neon-pink);
+            text-align: center;
+        }
+
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 2px solid rgba(0, 240, 255, 0.25);
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255,255,255,0.15);
+        }
+        .glass-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-blue);
+            box-shadow: 0 25px 50px rgba(0, 240, 255, 0.4), 0 0 30px rgba(255, 0, 127, 0.25);
+        }
+
+
+        .total-card { 
+            padding: 45px 30px; 
+            text-align: center; 
+            margin-bottom: 30px; 
+            position: relative;
+            overflow: hidden;
+            border-color: rgba(0, 240, 255, 0.3);
+        }
+        
+        @keyframes kilauan {
+            0% { transform: skewX(-25deg) translateX(-150%); }
+            100% { transform: skewX(-25deg) translateX(150%); }
+        }
+        .total-card::before {
+            content: ''; position: absolute; top: 0; left: -50%; width: 200%; height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(0, 240, 255, 0.2) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-25deg); animation: kilauan 4s infinite linear;
+        }
+
+        .total-label { font-size: 0.85rem; font-weight: 800; color: #bde5ff; letter-spacing: 3px; text-shadow: 0 0 10px rgba(0, 240, 255, 0.4); }
+        
+        .total-value { 
+            font-family: var(--font-serif); 
+            font-size: 4.2rem; 
+            font-weight: 900; 
+            margin: 15px 0; 
+            color: #fff; 
+            text-shadow: 0 0 25px var(--neon-blue), 0 0 50px rgba(0, 240, 255, 0.6);
+        }
+        
+
+        .progress-container { width: 100%; height: 22px; background: rgba(0, 0, 0, 0.5); border-radius: 50px; margin-top: 25px; overflow: hidden; border: 2px solid rgba(0, 240, 255, 0.3); box-shadow: inset 0 2px 5px rgba(0,0,0,0.6); }
+        
+        @keyframes aliranCahaya {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 200% 0%; }
+        }
+        .progress-fill { 
+            height: 100%; width: 0%; 
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink), var(--neon-blue)); 
+            background-size: 200% 100%;
+            animation: aliranCahaya 2s infinite linear;
+            border-radius: 50px; 
+            box-shadow: 0 0 20px var(--neon-blue);
+        }
+
+        .progress-text { font-size: 0.8rem; font-weight: 900; margin-top: 12px; color: var(--neon-blue); letter-spacing: 1px; text-shadow: 0 0 10px var(--neon-blue); }
+
+
+        .target-status-box {
+            background: rgba(0, 240, 255, 0.06);
+            border: 2px solid rgba(0, 240, 255, 0.25);
+            border-radius: 20px;
+            padding: 16px;
+            margin-top: 20px;
+            box-shadow: inset 0 0 15px rgba(0, 240, 255, 0.1);
+        }
+        .target-status-box div:first-child { font-size: 0.75rem; font-weight: 800; color: #a3cbee; letter-spacing: 1px; margin-bottom: 4px; }
+        .target-status-box div:last-child { font-size: 1.5rem; font-weight: 900; color: #fff; text-shadow: 0 0 15px rgba(255,255,255,0.4); }
+
+
+        .quote-banner {
+            padding: 20px; text-align: center; margin-bottom: 30px;
+            border-left: 5px solid var(--neon-blue); border-right: 5px solid var(--neon-pink); border-radius: 16px;
+            background: rgba(0, 240, 255, 0.08);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+        }
+        #kata-motivasi { font-family: var(--font-serif); font-style: italic; font-size: 1rem; color: #f0f7ff; line-height: 1.5; text-shadow: 0 0 5px rgba(255,255,255,0.2); }
+
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 35px; }
+        .card { padding: 30px 20px; }
+        
+        .profile-card { text-align: center; }
+        .avatar-wrapper { position: relative; width: 95px; height: 95px; margin: 0 auto 18px; }
+        .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid #fff; box-shadow: 0 0 20px rgba(0,0,0,0.6); }
+        
+        @keyframes putaran { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .avatar-ring { position: absolute; top: -8px; bottom: -8px; left: -8px; right: -8px; border: 3px dashed var(--neon-blue); border-radius: 50%; animation: putaran 8s linear infinite; filter: drop-shadow(0 0 8px var(--neon-blue)); }
+        .avatar-ring.pink { border-color: var(--neon-pink); animation-direction: reverse; filter: drop-shadow(0 0 8px var(--neon-pink)); }
+
+
+        .profile-name { font-weight: 900; font-size: 0.95rem; color: #fff; margin-bottom: 6px; letter-spacing: 0.5px; white-space: nowrap; }
+        .badge-status { font-size: 0.7rem; font-weight: 900; background: #fff; color: #000; padding: 5px 16px; border-radius: 50px; display: inline-block; margin-bottom: 15px; letter-spacing: 1px; box-shadow: 0 0 15px rgba(255,255,255,0.5); }
+        .user-vault-value { font-size: 1.5rem; font-weight: 900; color: #ffffff; text-shadow: 0 0 15px rgba(255,255,255,0.4); }
+
+
+        .form-title { font-family: var(--font-serif); margin-bottom: 20px; font-size: 1.3rem; font-weight: 800; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
+        .custom-select, .custom-input { 
+            width: 100%; padding: 15px; border-radius: 16px; border: 2px solid rgba(255,255,255,0.2); 
+            margin-bottom: 14px; outline: none; font-family: var(--font-sans); font-weight: 700; 
+            background: #060914; color: #fff; font-size: 0.95rem;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .custom-select:focus, .custom-input:focus { border-color: var(--neon-blue); box-shadow: 0 0 15px rgba(0,240,255,0.5), inset 0 1px 2px rgba(0,0,0,0.5); }
+        .custom-select option { background: #0a0e20; color: #fff; }
+
+        .btn-submit { 
+            width: 100%; padding: 16px; background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink)); color: #fff; border: none; 
+            border-radius: 16px; font-weight: 900; cursor: pointer; letter-spacing: 1.5px; font-size: 1rem;
+            box-shadow: 0 5px 25px rgba(0, 240, 255, 0.5);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+        .btn-submit:hover { box-shadow: 0 8px 35px var(--neon-blue), 0 0 25px var(--neon-pink); transform: translateY(-3px); }
+
+        .history-list { max-height: 290px; overflow-y: auto; padding-right: 5px; }
+        .history-list::-webkit-scrollbar { width: 6px; }
+        .history-list::-webkit-scrollbar-thumb { background: linear-gradient(var(--neon-blue), var(--neon-pink)); border-radius: 10px; }
+        
+        .history-item { 
+            background: rgba(255, 255, 255, 0.04); 
+            padding: 15px; 
+            border-radius: 16px; 
+            margin-bottom: 12px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-start; 
+            border: 2px solid rgba(255,255,255,0.06); 
+        }
+        .history-item:hover { border-color: rgba(0, 240, 255, 0.4); background: rgba(0, 240, 255, 0.04); }
+        .btn-cancel { background: rgba(239, 68, 68, 0.25); color: #ff6b6b; padding: 6px 14px; border-radius: 8px; border: 1px solid rgba(239,68,68,0.5); font-size: 0.75rem; font-weight: 800; cursor: pointer; margin-top: 8px; }
+        .btn-cancel:hover { background: #ef4444; color: #fff; box-shadow: 0 0 15px #ef4444; }
+
+        /* Galeri Foto */
+        .section-title { font-family: var(--font-serif); font-size: 2.4rem; text-align: center; margin: 60px 0 30px; font-weight: 900; letter-spacing: 2px; color: #fff; text-shadow: 0 0 20px var(--neon-blue), 0 0 40px var(--neon-pink); }
+        .gallery-container { display: flex; flex-direction: column; gap: 35px; }
+        
+        .memory-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            align-items: center;
+        }
+        @media(max-width: 550px) { .memory-row { grid-template-columns: 1fr; } }
+
+        .photo-card-premium {
+            background: rgba(10, 16, 36, 0.8);
+            border: 2px solid rgba(0, 240, 255, 0.3);
+            border-radius: 24px;
+            overflow: hidden;
+            padding: 14px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+        }
+        .photo-card-premium:hover {
+            border-color: var(--neon-blue);
+            box-shadow: 0 20px 45px rgba(0, 240, 255, 0.5);
+        }
+        .photo-card-premium.pink-border {
+            border-color: rgba(255, 0, 127, 0.3);
+        }
+        .photo-card-premium.pink-border:hover {
+            border-color: var(--neon-pink);
+            box-shadow: 0 20px 45px rgba(255, 0, 127, 0.5);
+        }
+
+        .img-frame {
+            width: 100%;
+            height: auto; 
+            max-height: 500px; 
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 14px;
+            border: 2px solid rgba(255,255,255,0.05);
+            background: #000;
+        }
+        .img-frame img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: contain; 
+            display: block;
+        }
+        
+        .caption-area { padding: 0 4px; }
+        .caption-text { font-family: var(--font-serif); font-style: italic; font-size: 1rem; color: #f0f7ff; line-height: 1.5; min-height: 40px; }
+        .caption-author { font-family: var(--font-cursive); font-size: 1.8rem; text-align: right; margin-top: 8px; color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); }
+        .caption-author.deska { color: var(--neon-pink); text-shadow: 0 0 10px var(--neon-pink); }
+
+
+        .ripple-effect {
+            position: absolute; border: 3px solid var(--neon-blue); border-radius: 50%;
+            pointer-events: none; animation: riakKeluar 0.6s cubic-bezier(0.075, 0.82, 0.165, 1) forwards;
+            z-index: 9999; transform: translate(-50%, -50%);
+            box-shadow: 0 0 20px var(--neon-blue), inset 0 0 10px var(--neon-blue);
+        }
+        @keyframes riakKeluar { 0% { width: 0; height: 0; opacity: 1; } 100% { width: 140px; height: 140px; opacity: 0; } }
+
+        /* Pop-up Notifikasi */
+        .swal2-cyber-popup {
+            background: rgba(4, 6, 18, 0.98) !important;
+            backdrop-filter: blur(25px) !important;
+            border: 2px solid var(--neon-blue) !important;
+            border-radius: 24px !important;
+            color: #fff !important;
+            box-shadow: 0 0 35px rgba(0, 240, 255, 0.4) !important;
+        }
+    </style>
+</head>
+<body>
+
+
+    <audio id="bg-music" src="https://www.image2url.com/r2/default/audio/1780017256226-92eebd05-5928-490e-abc9-7ab1081ba990.mp3" loop></audio>
+
+    <div class="bg-deco" id="particles-container"></div>
+
+    <div class="container">
+
+        <div class="header-widget">
+            <div id="status-waktu">MEMUAT STATUS TABUNGAN...</div>
+            <div id="jam-digital">00:00:00</div>
+        </div>
+
+
+        <div class="top-bar">
+            <div class="app-title"><br>The Future of Rizky & Deska </div>
+        </div>
+
+
+        <div class="glass-card total-card">
+            <div class="total-label">TOTAL KESELURUHAN DANA</div>
+            <div class="total-value" id="val-total">Rp 0</div>
+            <div style="font-size: 0.8rem; font-weight: 800; color: #bde5ff; letter-spacing: 1px; text-shadow: 0 0 8px rgba(0,240,255,0.4);">TARGET UTAMA: RP 10.000.000</div>
+            
+            <div class="progress-container">
+                <div class="progress-fill" id="progress-bar"></div>
+            </div>
+            <div class="progress-text" id="progress-text">0% MENUJU TARGET BERSAMA</div>
+
+            <div class="target-status-box">
+                <div>SISA DANA YANG HARUS DIKUMPULKAN</div>
+                <div id="ext-sisa">Rp 10.000.000</div>
+            </div>
+        </div>
+
+
+        <div class="glass-card quote-banner">
+            <div id="kata-motivasi">"Masa depan yang berkilau diatur oleh setiap langkah kecil yang kita putuskan bersama hari ini."</div>
+        </div>
+
+
+        <div class="grid-2">
+
+            <div class="glass-card card profile-card">
+                <div class="avatar-wrapper">
+                    <div class="avatar-ring"></div>
+                    <img src="https://www.image2url.com/r2/default/images/1780014024498-6ef21c4a-ec8f-46e5-a9d1-80ae6c634489.jpg" class="avatar-img" alt="Foto Rizky Herlangga">
+                </div>
+                <div class="profile-name">Rizky Herlangga</div>
+                <div id="badge-u1" class="badge-status" style="background-color: var(--neon-blue); color: #060814; box-shadow: 0 0 15px var(--neon-blue);">PEMILIK 1</div>
+                <div class="user-vault-value" id="val-u1">Rp 0</div>
+            </div>
+
+
+            <div class="glass-card card profile-card">
+                <div class="avatar-wrapper">
+                    <div class="avatar-ring pink"></div>
+                    <img src="https://www.image2url.com/r2/default/images/1780014032890-6b7f9bec-a5a5-4c27-aab4-59f45ef60c16.jpg" class="avatar-img" alt="Foto Deska Putri Hidayani">
+                </div>
+                <div class="profile-name">Deska Putri Hidayani</div>
+                <div id="badge-u2" class="badge-status" style="background-color: var(--neon-pink); color: #fff; box-shadow: 0 0 15px var(--neon-pink);">PEMILIK 2</div>
+                <div class="user-vault-value" id="val-u2">Rp 0</div>
+            </div>
+
+
+            <div class="glass-card card">
+                <h3 class="form-title">Isi Tabungan</h3>
+                <select id="input-nama" class="custom-select">
+                    <option value="Rizky ">Rizky </option>
+                    <option value="Deska">Deska</option>
+                </select>
+                <select id="input-nominal" class="custom-select">
+                    <option value="5000">Rp 5.000</option>
+                    <option value="10000">Rp 10.000</option>
+                    <option value="20000">Rp 20.000</option>
+                    <option value="50000">Rp 50.000</option>
+                    <option value="100000">Rp 100.000</option>
+                    <option value="500000">Rp 500.000</option>
+                </select>
+                <input type="text" id="input-pesan" class="custom-input" placeholder="Tulis pesan pendek di sini..." maxlength="70">
+                <button class="btn-submit" onclick="simpanData()">KIRIM DATA TABUNGAN</button>
+            </div>
+
+
+            <div class="glass-card card">
+                <h3 class="form-title">Riwayat Catatan</h3>
+                <div class="history-list" id="riwayat-box">
+                    <div style="text-align: center; color: #a3cbee; font-size: 0.85rem; padding-top: 30px;">Belum ada riwayat transaksi masuk.</div>
+                </div>
+            </div>
+        </div>
+
+
+        <h2 class="section-title">Galeri Memori Bersama</h2>
+        
+        <div class="gallery-container">
+            
+
+            <div class="memory-row">
+
+                <div class="photo-card-premium">
+                    <div class="img-frame">
+                        <img src="https://www.image2url.com/r2/default/images/1780014051264-ab016fb3-d805-4c38-b949-d00073199652.jpg" alt="Foto Rizky Herlangga 1">
+                    </div>
+                    <div class="caption-area">
+                        <p class="caption-text">"Setiap keputusan mengunci tabungan hari ini adalah pembuktian bahwa mimpiku bersamamu nyata."</p>
+                        <div class="caption-author">Rizky Herlangga</div>
+                    </div>
+                </div>
+
+
+                <div class="photo-card-premium pink-border">
+                    <div class="img-frame">
+                        <img src="https://www.image2url.com/r2/default/images/1780014046012-4d1653eb-e7d7-462e-8ccf-db271b0c8ae0.jpg" alt="Foto Deska Putri Hidayani 1">
+                    </div>
+                    <div class="caption-area">
+                        <p class="caption-text">"Angka-angka ini bisa dihitung, tapi rasa tenang karena berjuang bersamamu tak ada batasnya."</p>
+                        <div class="caption-author deska">Deska Putri Hidayani</div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="memory-row">
+
+                <div class="photo-card-premium">
+                    <div class="img-frame">
+                        <img src="https://www.image2url.com/r2/default/images/1780014846083-8af41865-1984-4fed-8a6e-329679c79cb2.jpg" alt="Foto Rizky Herlangga 2">
+                    </div>
+                    <div class="caption-area">
+                        <p class="caption-text">"Uang bisa dicari kapan saja, tapi pasangan sehebat dirimu tidak akan pernah bisa digantikan."</p>
+                        <div class="caption-author">Rizky Herlangga</div>
+                    </div>
+                </div>
+
+
+                <div class="photo-card-premium pink-border">
+                    <div class="img-frame">
+                        <img src="https://www.image2url.com/r2/default/images/1780014028819-d0db87f6-6cda-4045-a276-6cdcdaf8cf56.jpg" alt="Foto Deska Putri Hidayani 2">
+                    </div>
+                    <div class="caption-area">
+                        <p class="caption-text">"Membangun masa depan itu seru, apalagi kalau tujuannya adalah menua bersamamu."</p>
+                        <div class="caption-author deska">Deska Putri Hidayani</div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="memory-row">
+
+                <div class="photo-card-premium">
+                    <div class="img-frame">
+                        <img src="https://www.image2url.com/r2/default/images/1780014014145-f465c576-ef59-403a-90c3-4f3361e1773b.jpg" alt="Foto Rizky Herlangga 3">
+                    </div>
+                    <div class="caption-area">
+                        <p class="caption-text">"Konsistensi dua hati yang saling sepakat jauh lebih kuat dari rintangan apa pun."</p>
+                        <div class="caption-author">Rizky Herlangga</div>
+                    </div>
+                </div>
+
+                <!-- Foto Deska Putri Hidayani 3 (Border Pink) -->
+                <div class="photo-card-premium pink-border">
+                    <div class="img-frame">
+                        <img src="https://www.image2url.com/r2/default/images/1780014038504-15445ac3-c75a-41fd-a302-a78d8c69b17a.jpg" alt="Foto Deska Putri Hidayani 3">
+                    </div>
+                    <div class="caption-area">
+                        <p class="caption-text">"Tidak peduli seberapa lambat prosesnya, yang penting arah tujuan kita sama."</p>
+                        <div class="caption-author deska">Deska Putri Hidayani</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+
+        const firebaseConfig = { databaseURL: "https://tabungan-iki-default-rtdb.firebaseio.com/" };
+        let database = null;
+        try {
+            if(firebaseConfig.databaseURL.indexOf("YOUR-PROJECT-ID") === -1) {
+                firebase.initializeApp(firebaseConfig);
+                database = firebase.database();
+            }
+        } catch(e) { console.warn("Sistem Lokal Aktif."); }
+
+        const targetAmount = 10000000;
+        let localStateData = JSON.parse(localStorage.getItem('vault_rizky_herlangga_deska')) || {};
+
+        function jalankanPartikel() {
+            const spawnBox = document.getElementById('particles-container');
+            for(let i=0; i<18; i++) { 
+                const item = document.createElement('div');
+                item.className = i % 2 === 0 ? 'particle p-blue' : 'particle p-pink';
+                const diagonalSize = Math.random() * 25 + 15;
+                item.style.width = diagonalSize + 'px';
+                item.style.height = diagonalSize + 'px';
+                item.style.left = Math.random() * 100 + 'vw';
+                item.style.animationDuration = (Math.random() * 6 + 10) + 's';
+                item.style.animationDelay = (Math.random() * 4) + 's';
+                spawnBox.appendChild(item);
+            }
+        }
+        jalankanPartikel();
+
+        function formatRupiah(num) { return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
+        let currentTotal = 0, currentU1 = 0, currentU2 = 0;
+
+        function perbaruiMetrikAntarmuka(total) {
+            const rem = Math.max(targetAmount - total, 0);
+            document.getElementById('ext-sisa').innerText = rem === 0 ? "TARGET TERCAPAI! 👑" : "Rp " + formatRupiah(rem);
+
+            const percentage = Math.min((total / targetAmount) * 100, 100).toFixed(1);
+            document.getElementById('progress-bar').style.width = percentage + "%";
+            document.getElementById('progress-text').innerText = percentage + "% MENUJU TARGET BERSAMA";
+        }
+
+        function animasiPenghitung(element, startValue, endValue, duration) {
+            let startTimestamp = null;
+            const langkahHitung = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const currentCountValue = Math.floor(progress * (endValue - startValue) + startValue);
+                element.innerText = "Rp " + formatRupiah(currentCountValue);
+                if (progress < 1) {
+                    window.requestAnimationFrame(langkahHitung);
+                } else {
+                    element.innerText = "Rp " + formatRupiah(endValue);
+                    if(element.id === 'val-total') perbaruiMetrikAntarmuka(endValue);
+                }
+            };
+            window.requestAnimationFrame(langkahHitung);
+        }
+
+        function tampilkanDataDariSnapshot(dataMap) {
+            let aggregatedTotal = 0, aggregatedU1 = 0, aggregatedU2 = 0;
+            let outputHtml = '';
+
+            if (dataMap && Object.keys(dataMap).length > 0) {
+                Object.entries(dataMap).reverse().forEach(([key, node]) => {
+                    aggregatedTotal += node.nominal;
+                    
+
+                    let namaBersih = node.nama.trim();
+                    if(namaBersih === "Rizky") aggregatedU1 += node.nominal; 
+                    else if(namaBersih === "Deska") aggregatedU2 += node.nominal;
+                    
+                   
+                    let namaTampilan = namaBersih === "Rizky" ? "Rizky Herlangga" : "Deska Putri Hidayani";
+                    let nominalColor = namaBersih === "Rizky" ? "var(--neon-blue)" : "var(--neon-pink)";
+
+                    outputHtml += `<div class="history-item">
+                        <div style="flex: 1; padding-right: 12px;">
+                            <div style="font-size:0.9rem; font-weight:800; color:#fff;">${namaTampilan}</div>
+                            <div style="font-size:0.7rem; color:#a3cbee; margin: 2px 0 6px 0;">${node.tanggal}</div>
+                            <div style="font-size:0.8rem; font-style: italic; color: #ffe4e6; line-height: 1.3;">"${node.pesan}"</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:0.95rem; font-weight:800; color:${nominalColor}; text-shadow: 0 0 10px ${nominalColor}">+${formatRupiah(node.nominal)}</div>
+                            <button class="btn-cancel" onclick="hapusTransaksi('${key}')">Hapus</button>
+                        </div>
+                    </div>`;
+                });
+            } else {
+                outputHtml = `<div style="text-align: center; color: #a3cbee; font-size: 0.85rem; padding-top: 30px;">Belum ada riwayat transaksi masuk.</div>`;
+            }
+
+            animasiPenghitung(document.getElementById('val-total'), currentTotal, aggregatedTotal, 900);
+            animasiPenghitung(document.getElementById('val-u1'), currentU1, aggregatedU1, 900);
+            animasiPenghitung(document.getElementById('val-u2'), currentU2, aggregatedU2, 900);
+            
+            currentTotal = aggregatedTotal; currentU1 = aggregatedU1; currentU2 = aggregatedU2;
+            document.getElementById('riwayat-box').innerHTML = outputHtml;
+        }
+
+        if(database) {
+            database.ref('rizky_herlangga_deska_vault').on('value', (snapshot) => { tampilkanDataDariSnapshot(snapshot.val()); });
+        } else {
+            tampilkanDataDariSnapshot(localStateData);
+        }
+
+        function simpanData() {
+            const profileSelected = document.getElementById('input-nama').value;
+            const amountSelected = parseInt(document.getElementById('input-nominal').value);
+            const notesText = document.getElementById('input-pesan').value || "Kontribusi rutin untuk masa depan bersama ⚡";
+            
+            const timestampNow = new Date();
+            const timeFormattedString = `${timestampNow.getDate()}/${timestampNow.getMonth()+1} ${timestampNow.getHours()}:${timestampNow.getMinutes().toString().padStart(2,'0')}`;
+            
+            const packetPayload = { nama: profileSelected, nominal: amountSelected, tanggal: timeFormattedString, pesan: notesText };
+
+            if(database) {
+                database.ref('rizky_herlangga_deska_vault').push(packetPayload);
+            } else {
+                const uniqueGeneratedKey = 'local_' + Date.now();
+                localStateData[uniqueGeneratedKey] = packetPayload;
+                localStorage.setItem('vault_rizky_herlangga_deska', JSON.stringify(localStateData));
+                tampilkanDataDariSnapshot(localStateData);
+            }
+            
+            document.getElementById('input-pesan').value = "";
+            confetti({ particleCount: 140, spread: 80, origin: { y: 0.65 }, colors: ['#00f0ff', '#ff007f', '#ffffff'] });
+        }
+
+        function hapusTransaksi(targetUniqueKey) {
+            Swal.fire({
+                title: 'Hapus Catatan Ini?',
+                text: "Item transaksi ini akan dihapus dari rekap tabungan.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#00f0ff',
+                cancelButtonColor: '#ef4444',
+                confirmButtonText: 'YA, HAPUS',
+                cancelButtonText: 'BATAL',
+                customClass: { popup: 'swal2-cyber-popup' }
+            }).then((statusResponse) => {
+                if (statusResponse.isConfirmed) {
+                    if(database) {
+                        database.ref('rizky_herlangga_deska_vault/' + targetUniqueKey).remove();
+                    } else {
+                        delete localStateData[targetUniqueKey];
+                        localStorage.setItem('vault_rizky_herlangga_deska', JSON.stringify(localStateData));
+                        tampilkanDataDariSnapshot(localStateData);
+                    }
+                    Swal.fire({ title: 'Berhasil!', text: 'Riwayat tabungan telah diperbarui.', icon: 'success', confirmButtonText: 'OK', customClass: { popup: 'swal2-cyber-popup' } });
+                }
+            });
+        }
+
+
+        function jalankanJamDanWaktu() {
+            const timeDateNode = new Date();
+            const hrs = timeDateNode.getHours();
+            const mins = timeDateNode.getMinutes().toString().padStart(2, '0');
+            const secs = timeDateNode.getSeconds().toString().padStart(2, '0');
+            
+            document.getElementById('jam-digital').innerText = `${hrs.toString().padStart(2, '0')}:${mins}:${secs}`;
+            
+            let ucapanWaktu = "SELAMAT DATANG";
+            if (hrs >= 4 && hrs < 11) ucapanWaktu = "⛅ SELAMAT PAGI RIZKY HERLANGGA & DESKA PUTRI HIDAYANI! SEMANGAT HARI INI";
+            else if (hrs >= 11 && hrs < 15) ucapanWaktu = "☀️ SELAMAT SIANG! JAGA KONSISTENSI BERSAMA";
+            else if (hrs >= 15 && hrs < 18) ucapanWaktu = "🌆 SELAMAT SORE! SETIAP LANGKAH KECIL SANGAT BERARTI";
+            else ucapanWaktu = "🌙 SELAMAT MALAM! TERIMA KASIH ATAS KERJA KERAS HARI INI";
+            
+            document.getElementById('status-waktu').innerText = ucapanWaktu;
+        }
+
+
+        document.addEventListener('click', (event) => {
+
+            const audio = document.getElementById('bg-music');
+            if (audio && audio.paused) {
+                audio.play().catch(err => console.log("Musik tidak bisa diputar otomatis oleh browser:", err));
+            }
+
+
+            const waveCircle = document.createElement('div');
+            waveCircle.className = 'ripple-effect';
+            waveCircle.style.left = `${event.pageX}px`;
+            waveCircle.style.top = `${event.pageY}px`;
+            document.body.appendChild(waveCircle);
+            setTimeout(() => waveCircle.remove(), 600);
+        });
+
+        const daftarKataMotivasi = [
+            "Setiap rupiah yang disimpan hari ini adalah fondasi kenyamanan masa depan kita.",
+            "Dua pikiran, dua hati, satu tujuan masa depan yang pasti.",
+            "Bukan seberapa besar nominal awal, melainkan seberapa kokoh komitmen bertahan.",
+            "Mimpi besar selalu butuh perjuangan, mari kita isi celengan ini bersama.",
+            "Angka tabungan bisa dihitung secara matematis, tapi perjuangan di baliknya tidak ternilai."
+        ];
+        let indeksMotivasiSekarang = 0;
+        
+        setInterval(() => {
+            const teksMotivasi = document.getElementById('kata-motivasi');
+            teksMotivasi.style.opacity = '0';
+            setTimeout(() => {
+                indeksMotivasiSekarang = (indeksMotivasiSekarang + 1) % daftarKataMotivasi.length;
+                teksMotivasi.innerText = `"${daftarKataMotivasi[indeksMotivasiSekarang]}"`;
+                teksMotivasi.style.opacity = '1';
+            }, 400);
+        }, 5000);
+
+        window.addEventListener('DOMContentLoaded', () => {
+            setInterval(jalankanJamDanWaktu, 1000);
+            jalankanJamDanWaktu();
+        });
+    </script>
+</body>
+</html>
