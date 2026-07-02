@@ -1,0 +1,575 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LutBotz Official - Solusi Monitoring Keluarga Pintar</title>
+    <style>
+        /* --- RESET & BASE STYLES --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: #050212;
+            color: #ffffff;
+            overflow-x: hidden;
+            position: relative;
+            /* Latar belakang diperkaya dengan gradasi neon hijau & pink menyala */
+            background-image: 
+                radial-gradient(circle at 10% 15%, rgba(57, 255, 20, 0.18) 0%, transparent 55%),
+                radial-gradient(circle at 90% 85%, rgba(255, 0, 127, 0.18) 0%, transparent 55%),
+                radial-gradient(circle at 50% 50%, rgba(10, 5, 27, 1) 0%, #050212 100%);
+            background-attachment: fixed;
+        }
+
+        /* --- BACKGROUND PARTICLES EFFECT (AGAR TIDAK KOSONG) --- */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(rgba(57, 255, 20, 0.15) 1px, transparent 1px),
+                radial-gradient(rgba(255, 0, 127, 0.15) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            z-index: -2;
+            opacity: 0.6;
+        }
+
+        /* --- NEON GLOW TEXT & UTILITIES --- */
+        .text-neon-pink {
+            color: #ff007f;
+            text-shadow: 0 0 10px #ff007f, 0 0 20px #ff007f, 0 0 30px rgba(255, 0, 127, 0.5);
+        }
+
+        .text-neon-green {
+            color: #39ff14;
+            text-shadow: 0 0 10px #39ff14, 0 0 20px #39ff14, 0 0 30px rgba(57, 255, 20, 0.5);
+        }
+
+        .text-neon-cyan {
+            color: #00f0ff;
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.4);
+        }
+
+        /* --- BACKGROUND SHAPES (DECORATIVE) --- */
+        .blob {
+            position: fixed;
+            width: 450px;
+            height: 450px;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: -1;
+            opacity: 0.45;
+            animation: float 14s ease-in-out infinite alternate;
+        }
+        .blob-pink {
+            background: #ff007f;
+            top: -100px;
+            left: -100px;
+        }
+        .blob-green {
+            background: #39ff14;
+            bottom: 5%;
+            right: -100px;
+            animation-delay: -7s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(60px, 80px) scale(1.2); }
+        }
+
+        /* --- CONTAINER --- */
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(15, 8, 38, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 0, 127, 0.35);
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255, 0, 127, 0.2);
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 3.6rem;
+            font-weight: 900;
+            letter-spacing: 4px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        header p {
+            font-size: 1.25rem;
+            color: #d1d2f5;
+            font-weight: 500;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(57, 255, 20, 0.15);
+            border: 1px solid #39ff14;
+            color: #39ff14;
+            padding: 6px 18px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 25px;
+            box-shadow: 0 0 15px rgba(57, 255, 20, 0.4);
+        }
+
+        article {
+            background: rgba(15, 8, 38, 0.25);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(57, 255, 20, 0.25);
+            border-top: 5px solid #39ff14;
+            border-radius: 28px;
+            padding: 50px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(57, 255, 20, 0.05);
+            margin-bottom: 40px;
+            line-height: 1.9;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-top: 40px;
+            margin-bottom: 22px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 12px;
+        }
+
+        p {
+            margin-bottom: 22px;
+            color: #e2e2e9;
+            font-size: 1.05rem;
+        }
+
+        /* --- INTERACTIVE REGISTER GUIDE STEPS --- */
+        .guide-box {
+            background: rgba(5, 2, 18, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .guide-step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+        
+        .guide-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-num {
+            background: #39ff14;
+            color: #000;
+            font-weight: 900;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 18px;
+            flex-shrink: 0;
+            box-shadow: 0 0 12px #39ff14;
+        }
+
+        .step-content h4 {
+            color: #39ff14;
+            margin-bottom: 6px;
+            font-size: 1.15rem;
+        }
+
+        .step-content p {
+            font-size: 0.98rem;
+            color: #b5b5be;
+            margin-bottom: 0;
+        }
+
+        /* --- FEATURES LIST --- */
+        .features {
+            list-style: none;
+            margin: 25px 0;
+        }
+
+        .features li {
+            margin-bottom: 18px;
+            padding-left: 35px;
+            position: relative;
+            color: #e2e2e9;
+        }
+
+        .features li::before {
+            content: "⚡";
+            position: absolute;
+            left: 0;
+            color: #ff007f;
+            text-shadow: 0 0 8px #ff007f;
+            font-size: 1.2rem;
+        }
+
+        /* --- TERMS & CONDITIONS BOX --- */
+        .terms-box {
+            background: rgba(255, 0, 127, 0.03);
+            border: 1px dashed rgba(255, 0, 127, 0.5);
+            border-radius: 20px;
+            padding: 35px;
+            margin-top: 45px;
+            box-shadow: inset 0 0 25px rgba(255, 0, 127, 0.04);
+        }
+
+        .terms-box h3 {
+            color: #ff007f;
+            margin-bottom: 22px;
+            font-size: 1.4rem;
+            text-shadow: 0 0 8px rgba(255, 0, 127, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .terms-list {
+            padding-left: 20px;
+            color: #d1d1d6;
+        }
+
+        .terms-list li {
+            margin-bottom: 16px;
+            line-height: 1.8;
+        }
+        
+        .terms-list strong {
+            color: #ffffff;
+        }
+
+        /* --- MAIN CTA BUTTON --- */
+        .cta-btn {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff007f, #39ff14);
+            color: #000;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 16px 42px;
+            border-radius: 50px;
+            text-decoration: none;
+            letter-spacing: 1.5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 25px rgba(57, 255, 20, 0.45);
+            margin-top: 30px;
+            margin-bottom: 60px;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 0 35px #ff007f, 0 0 20px #39ff14;
+            color: #fff;
+        }
+
+        /* --- CONTACT DEVELOPER SECTION (FOTO 1000385765.jpg STYLING FIXED) --- */
+        .contact-section {
+            margin-top: 50px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 45px;
+        }
+
+        .contact-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+        }
+
+        /* Grid Layout Responsif & Rapi */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 22px;
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        /* Tombol Testimoni diatur penuh ke samping agar simetris mengunci grid */
+        .contact-card.full-width {
+            grid-column: span 2;
+        }
+
+        .contact-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            padding: 30px 24px;
+            text-decoration: none;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.2s ease;
+        }
+
+        /* Efek Hover Kursor Ringan Sebelum Diklik */
+        .contact-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* EFEK BIRU MENYALA OTOMATIS PAS DI-KLIK/TEKAN (ACTIVE & FOCUS STATE) SESUAI FOTO */
+        .contact-card:active,
+        .contact-card:focus {
+            border: 2px solid #00f0ff !important;
+            box-shadow: inset 0 0 15px rgba(0, 240, 255, 0.25), 0 0 30px rgba(0, 240, 255, 0.7) !important;
+            transform: scale(0.97);
+        }
+
+        .contact-icon {
+            width: 46px;
+            height: 46px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .contact-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .contact-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .contact-desc {
+            font-size: 0.92rem;
+            color: #b5b5be;
+            font-weight: 400;
+            line-height: 1.4;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #5c5c6d;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* --- RESPONSIVE DESIGN --- */
+        @media (max-width: 768px) {
+            header h1 { font-size: 2.4rem; }
+            article { padding: 25px; }
+            .container { margin: 15px auto; }
+            
+            /* Otomatis susun ke bawah 1 kolom penuh di layar handphone */
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+            .contact-card.full-width {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Dekorisasi Background Bulatan Neon -->
+    <div class="blob blob-pink"></div>
+    <div class="blob blob-green"></div>
+
+    <div class="container">
+        
+        <!-- HEADER -->
+        <header>
+            <div class="badge">Official Release - Play Store Approved</div>
+            <h1><span class="text-neon-pink">Lut</span><span class="text-neon-green">Botz RAT</span></h1>
+            <p>Sistem Pengawasan Jarak Jauh & Proteksi Keluarga Real-Time</p>
+        </header>
+
+        <!-- KONTEN ARTIKEL -->
+        <main>
+            <article>
+                <h2 class="text-neon-green">Apa itu LutBotz RAT?</h2>
+                <p>
+                    <strong>LutBotz RAT</strong> (Remote Access Trojan) kini telah resmi hadir di <strong>Google Play Store</strong>! Aplikasi inovatif ini dirancang khusus sebagai solusi mutakhir bagi orang tua dan kepala keluarga yang ingin memantau aktivitas digital anak ataupun anggota keluarga tercinta yang sering menghabiskan waktu di depan layar *smartphone*. Dengan performa super responsif, LutBotz memastikan kendali penuh demi menjaga keamanan digital keluarga Anda kapan pun dan di mana pun.
+                </p>
+
+                <h2 class="text-neon-pink">Ekosistem Utama: LutBotz & LittleGuard</h2>
+                <p>
+                    Sistem kendali jarak jauh ini bekerja secara berpasangan melalui ekosistem cerdas yang dikembangkan langsung oleh tim *developer* LutBotz untuk memberikan hasil kontrol terbaik:
+                </p>
+                <ul class="features">
+                    <li><strong>Aplikasi Utama (LutBotz RAT):</strong> Berfungsi sebagai *dashboard* pengontrol utama yang Anda pegang untuk memantau, mengelola, dan menerima laporan data secara langsung.</li>
+                    <li><strong>Aplikasi Pendamping (LittleGuard):</strong> Aplikasi target khusus besutan developer LutBotz yang dipasang pada perangkat anak atau keluarga Anda. *LittleGuard* berjalan ringan dan mengirimkan data pelaporan secara *real-time* ke *dashboard* Anda tanpa mengganggu performa HP target.</li>
+                </ul>
+
+                <h2 class="text-neon-green">Cara Registrasi Akun FREE & Upgrade Role</h2>
+                <p>
+                    Setiap pengguna berhak mendapatkan akses akun dasar secara gratis saat pertama kali mendaftar. Berikut alur pendaftaran resmi dan cara melakukan **Up Role** ke tingkat Premium/VIP:
+                </p>
+
+                <!-- PANDUAN PENDAFTARAN -->
+                <div class="guide-box">
+                    <div class="guide-step">
+                        <div class="step-num">1</div>
+                        <div class="step-content">
+                            <h4>Isi Form Create Account</h4>
+                            <p>Buka menu pendaftaran, masukkan **Email Gmail** valid (wajib berakhiran `@gmail.com`). Pilih bendera **Indonesia (🇮🇩)** dan isi nomor HP aktif. Pada kolom **ID Telegram**, masukkan deretan ID angka unik Anda (contoh: *7696754383*, bukan username biasa) agar laporan terkoneksi ke bot otomatis.</p>
+                        </div>
+                    </div>
+                    <div class="guide-step">
+                        <div class="step-num">2</div>
+                        <div class="step-content">
+                            <h4>Gunakan Password Kuat</h4>
+                            <p>Buat password minimal 7 karakter yang memenuhi kriteria keamanan tingkat tinggi: wajib mengandung unsur huruf, angka, dan simbol unik. Masukkan konfirmasi password yang sama, lalu klik tombol hijau **REGISTER** untuk mengaktifkan Akun Free Anda.</p>
+                        </div>
+                    </div>
+                    <div class="guide-step">
+                        <div class="step-num">3</div>
+                        <div class="step-content">
+                            <h4>Proses Up Role di Menu Setting</h4>
+                            <p>Setelah berhasil login menggunakan akun yang terdaftar, Anda dapat menikmati fitur pemantauan tanpa batas dengan melakukan peningkatan level akun. Cukup masuk ke menu **Setting (Pengaturan)** di dalam aplikasi, lalu lakukan **Up Role** untuk mengaktifkan lisensi VIP/Premium secara instan.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="text-neon-green">Mengapa Pembeli Memilih LutBotz RAT?</h2>
+                <ul class="features">
+                    <li><strong>Play Store Certified & Secure:</strong> Lolos verifikasi ketat Google Play Protect, menjamin aplikasi bebas dari infeksi malware berbahaya dari luar.</li>
+                    <li><strong>Real-Time Family Monitoring:</strong> Awasi pemakaian aplikasi, log aktivitas, dan status sistem target secara langsung tanpa jeda waktu lama.</li>
+                    <li><strong>Integrasi Notifikasi Cepat:</strong> Semua data log penting terkirim aman langsung ke Telegram pribadi Anda memanfaatkan ID angka yang didaftarkan.</li>
+                    <li><strong>Ringan & Efisien:</strong> Aplikasi target *LittleGuard* dirancang tidak boros baterai dan ramah terhadap kapasitas RAM ponsel keluarga Anda.</li>
+                </ul>
+
+                <!-- SYARAT & KETENTUAN TERBARU -->
+                <div class="terms-box">
+                    <h3>⚠️ Syarat & Ketentuan Penggunaan (Terms of Service)</h3>
+                    <ol class="terms-list">
+                        <li><strong>Ketentuan Data Registrasi:</strong> Seluruh informasi yang dimasukkan saat pendaftaran (Gmail, No HP, ID Telegram) harus valid dan aktif. Ketidaksesuaian ID Telegram akan menyebabkan laporan pemantauan dan sistem  gagal tersinkronisasi.</li>
+                        <li><strong>Batasan Akun Free & Premium:</strong> Akun FREE ditujukan untuk uji coba performa dasar dengan limitasi fitur tertentu. Pembukaan fitur kontrol penuh dan integrasi mendalam memerlukan proses Up Role resmi via menu pengaturan.</li>
+                        <li><strong>Tanggung Jawab Penggunaan Etis:</strong> Ekosistem LutBotz RAT dan LittleGuard dirancang murni untuk tujuan pengawasan anak di bawah umur, proteksi internal keluarga, manajemen perangkat pribadi, atau edukasi keamanan siber. Segala penyalahgunaan untuk memata-matai pihak lain secara ilegal di luar izin sepenuhnya adalah tanggung jawab hukum pengguna.</li>
+                        <li><strong>Keamanan Akun Pembeli:</strong> Kerahasiaan password minimal 7 karakter beserta data sesi pendaftaran wajib dijaga ketat oleh pembeli demi menghindari penyalahgunaan akses dashboard oleh pihak luar.</li>
+                        <li><strong>Keaslian Perangkat Lunak:</strong> Dilarang keras memodifikasi, membongkar (reverse engineering), atau mendistribusikan ulang APK LutBotz atau LittleGuard di luar Google Play Store resmi demi menjaga integritas sistem keamanan enkripsi data keluarga Anda.</li>
+                    </ol>
+                </div>
+
+                <div style="text-align: center;">
+                    <a href="https://play.google.com/store/apps/details?id=com.lutbotz.app" target="_blank" class="cta-btn">Download di Play Store</a>
+                </div>
+
+                
+                <div class="contact-section">
+                    <div class="contact-title text-neon-cyan">Contact Developer</div>
+                    
+                    <div class="contact-grid">
+                        
+                        
+                        <a href="https://wa.me/6282171717079" target="_blank" class="contact-card">
+                            <div class="contact-icon">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.455 5.703 1.458h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" fill="#25D366"/>
+                                </svg>
+                            </div>
+                            <div class="contact-name">WhatsApp</div>
+                            <div class="contact-desc">Hubungi Developer via WhatsApp (Fast Response)</div>
+                        </a>
+
+                      
+                        <a href="https://t.me/lutbotz" target="_blank" class="contact-card">
+                            <div class="contact-icon">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 24c6.627 0 12-5.373 12-12S18.627 0 12 0 0 5.373 0 12s5.373 12 12 12z" fill="#0088cc"/>
+                                    <path d="M18.35 6.65a.43.43 0 00-.4-.08l-13 5a.43.43 0 00-.04.79l3.36 1.05 1.1 3.5a.43.43 0 00.74.12l2.16-2.16 3.86 2.85a.43.43 0 00.67-.23l3-13.5a.43.43 0 00-.45-.44z" fill="#fff"/>
+                                </svg>
+                            </div>
+                            <div class="contact-name">Telegram</div>
+                            <div class="contact-desc">Hubungi Developer via Telegram (Fast Response)</div>
+                        </a>
+
+                        
+                        <a href="https://www.tiktok.com/@lutbotz?_r=1&_t=ZS-97h8rqit3cC" target="_blank" class="contact-card">
+                            <div class="contact-icon">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 24c6.627 0 12-5.373 12-12S18.627 0 12 0 0 5.373 0 12s5.373 12 12 12z" fill="#000000"/>
+                                    <path d="M17.8 8.4c-1.2 0-2.3-.5-3.1-1.3V14c0 2.8-2.3 5-5 5s-5-2.2-5-5 2.2-5 5-5c.3 0 .6 0 .9.1v2.1c-.3-.1-.6-.1-.9-.1-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3V3h2.2c.1 1.4 1.2 2.6 2.6 2.8V8c.1.2.2.4.3.4z" fill="#fff"/>
+                                    <path d="M17.5 8.1c-.9-.1-1.7-.6-2.3-1.3V14c0 2.5-2 4.5-4.5 4.5s-4.5-2-4.5-4.5 2-4.5 4.5-4.5c.3 0 .6 0 .8.1v1.1c-.3-.1-.5-.1-.8-.1-1.9 0-3.5 1.6-3.5 3.5s1.6 3.5 3.5 3.5 3.5-1.6 3.5-3.5V3.5h1.2c.2 1.4 1.3 2.5 2.7 2.7l.1 1.9z" fill="#ff007f"/>
+                                </svg>
+                            </div>
+                            <div class="contact-name">TikTok</div>
+                            <div class="contact-desc">Tiktok Resmi Lutbotz </div>
+                        </a>
+
+                        
+                        <a href="https://t.me/lutbotzzzz" target="_blank" class="contact-card">
+                            <div class="contact-icon">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 24c6.627 0 12-5.373 12-12S18.627 0 12 0 0 5.373 0 12s5.373 12 12 12z" fill="#0088cc"/>
+                                    <path d="M12 6.5c-3 0-5.5 2-5.5 4.5 0 1.5.9 2.8 2.4 3.6-.2.6-.7 1.5-1 2 .4 0 1.2-.4 1.9-.9.4.1.8.2 1.2.2 3 0 5.5-2 5.5-4.5S15 6.5 12 6.5z" fill="#fff" opacity="0.4"/>
+                                    <path d="M18.35 6.65a.43.43 0 00-.4-.08l-13 5a.43.43 0 00-.04.79l3.36 1.05 1.1 3.5a.43.43 0 00.74.12l2.16-2.16 3.86 2.85a.43.43 0 00.67-.23l3-13.5a.43.43 0 00-.45-.44z" fill="#fff"/>
+                                </svg>
+                            </div>
+                            <div class="contact-name">Telegram Group</div>
+                            <div class="contact-desc">Gabung ke Group Komunitas LutBotz</div>
+                        </a>
+
+                        
+                        <a href="https://whatsapp.com/channel/0029VbDPd91GufIyJSjMPJ1n/202" target="_blank" class="contact-card full-width">
+                            <div class="contact-icon">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" fill="#ffef00" opacity="0.1"/>
+                                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z" fill="#ff007f" style="cursor: pointer; filter: drop-shadow(0 0 6px #ff007f);"/>
+                                </svg>
+                            </div>
+                            <div class="contact-name">Testimoni Pembeli</div>
+                            <div class="contact-desc">Testimoni Resmi Lutbotz</div>
+                        </a>
+
+                    </div>
+                </div>
+
+            </article>
+        </main>
+
+        
+        <footer>
+            <p>&copy; 2026 LutBotz RAT & LittleGuard Project. All Rights Reserved.</p>
+        </footer>
+
+    </div>
+
+</body>
+</html>
